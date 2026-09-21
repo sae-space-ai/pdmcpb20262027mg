@@ -6,7 +6,7 @@ import {
   type DocStatus
 } from './data/curriculum';
 
-type Section = 'inicio' | 'programacion' | 'musica-camara' | 'orquesta' | 'banda' | 'unidades' | 'objetivos' | 'contenidos' | 'criterios' | 'evaluacion' | 'rubricas' | 'repertorio' | 'trazabilidad' | 'normativa' | 'calidad' | 'exportacion';
+type Section = 'inicio' | 'programacion' | 'musica-camara' | 'orquesta' | 'banda' | 'unidades' | 'objetivos' | 'contenidos' | 'actividades' | 'criterios' | 'evaluacion' | 'rubricas' | 'repertorio' | 'trazabilidad' | 'normativa' | 'calidad' | 'exportacion';
 
 function StatusBadge({ status }: { status: DocStatus }) {
   const colors: Record<DocStatus, string> = {
@@ -123,6 +123,7 @@ export default function App() {
     { id: 'unidades', label: 'Unidades', icon: '📚' },
     { id: 'objetivos', label: 'Objetivos', icon: '🎯' },
     { id: 'contenidos', label: 'Contenidos', icon: '📖' },
+    { id: 'actividades', label: 'Actividades', icon: '🎯' },
     { id: 'criterios', label: 'Criterios', icon: '✓' },
     { id: 'evaluacion', label: 'Evaluación', icon: '📊' },
     { id: 'rubricas', label: 'Rúbricas', icon: '📐' },
@@ -143,6 +144,7 @@ export default function App() {
       case 'unidades': return <UnidadesSection />;
       case 'objetivos': return <ObjetivosSection />;
       case 'contenidos': return <ContenidosSection />;
+      case 'actividades': return <ActividadesSection />;
       case 'criterios': return <CriteriosSection />;
       case 'evaluacion': return <EvaluacionSection />;
       case 'rubricas': return <RubricasSection />;
@@ -701,6 +703,32 @@ export default function App() {
     );
   }
 
+  function ActividadesSection() {
+    return (
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold text-gray-900">Actividades</h2>
+        <p className="text-sm text-gray-600">{filteredActividades.length} actividades encontradas. Cada actividad se relaciona con: objetivo → contenido → evidencia → instrumento → criterio.</p>
+        <div className="space-y-3">
+          {filteredActividades.map(act => (
+            <div key={act.id} className="bg-white rounded-xl p-4 border border-gray-200">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <span className="font-mono text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded font-bold">{act.id}</span>
+                <AsignaturaBadge asignatura={act.asignatura} />
+                <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{act.tipo}</span>
+                <StatusBadge status={act.estado} />
+              </div>
+              <p className="text-sm text-gray-700">{act.descripcion}</p>
+              <div className="mt-2 flex flex-wrap gap-1 text-xs">
+                <span className="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">Obj: {act.objetivoId}</span>
+                <span className="bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded">Cont: {act.contenidoId}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   function CriteriosSection() {
     return (
       <div className="space-y-6">
@@ -976,7 +1004,7 @@ export default function App() {
                   </td>
                   <td className="py-2 px-2">
                     <div className="flex flex-wrap gap-0.5">
-                      {ud.rubricasIds.map(id => <span key={id} className="bg-rose-50 text-rose-700 px-1 rounded">{id.replace('RUB-', '')}</span>)}
+                      {ud.rubricasIds.map(id => <span key={id} className="bg-violet-50 text-violet-700 px-1 rounded">{id.replace('RUB-', '')}</span>)}
                     </div>
                   </td>
                   <td className="py-2 px-2"><StatusBadge status={ud.estado} /></td>
@@ -1003,7 +1031,7 @@ export default function App() {
             <span className="text-gray-400">→</span>
             <span className="bg-teal-100 text-teal-700 px-3 py-1.5 rounded-lg font-mono">CE-MC-01</span>
             <span className="text-gray-400">→</span>
-            <span className="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-lg font-mono">RUB-MC4-UD01</span>
+            <span className="bg-violet-100 text-violet-700 px-3 py-1.5 rounded-lg font-mono">RUB-MC4-UD01</span>
           </div>
         </div>
       </div>
