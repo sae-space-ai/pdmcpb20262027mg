@@ -862,7 +862,7 @@ export const auditoriaCalidad = {
 };
 
 export const asignaturasInfo = {
-  MC: { nombre: 'Música de Cámara', cursos: ['4º EP', '5º EP', '6º EP'], color: 'indigo' },
-  ORQ: { nombre: 'Orquesta', cursos: ['Por verificar'], color: 'emerald' },
-  BND: { nombre: 'Banda', cursos: ['Por verificar'], color: 'amber' },
+  MC: { nombre: 'Música de Cámara', cursos: ['4º EP', '5º EP', '6º EP'] },
+  ORQ: { nombre: 'Orquesta', cursos: ['Por verificar'] },
+  BND: { nombre: 'Banda', cursos: ['Por verificar'] },
 };

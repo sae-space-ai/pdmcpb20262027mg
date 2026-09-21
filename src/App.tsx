@@ -16,7 +16,7 @@ function StatusBadge({ status }: { status: DocStatus }) {
     'DESARROLLO_PROPIO': 'bg-purple-100 text-purple-800 border-purple-300',
     'PROPUESTO': 'bg-yellow-100 text-yellow-800 border-yellow-300',
     'HISTORICO': 'bg-gray-100 text-gray-800 border-gray-300',
-    'HOLD': 'bg-red-100 text-red-800 border-red-300',
+    'HOLD': 'bg-orange-100 text-orange-800 border-orange-300',
   };
   const labels: Record<DocStatus, string> = {
     'VERIFICADO': '✓ Verificado',
@@ -25,7 +25,7 @@ function StatusBadge({ status }: { status: DocStatus }) {
     'DESARROLLO_PROPIO': '◆ Desarrollo propio',
     'PROPUESTO': '△ Propuesto',
     'HISTORICO': '◇ Histórico',
-    'HOLD': '⚠ HOLD',
+    'HOLD': '⏳ HOLD',
   };
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${colors[status]}`}>
@@ -55,13 +55,12 @@ export default function App() {
   const [filterAsignatura, setFilterAsignatura] = useState<string>('');
   const [filterCurso, setFilterCurso] = useState<string>('');
   const [filterEstado, setFilterEstado] = useState<string>('');
-  const [selectedUnidad, setSelectedUnidad] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const filteredUnidades = useMemo(() => {
     return unidades.filter(u => {
       if (filterAsignatura && u.asignatura !== filterAsignatura) return false;
-      if (filterCurso && !u.curso.includes(filterCurso.replace('º EP', 'º'))) return false;
+      if (filterCurso && !u.curso.includes(filterCurso)) return false;
       if (filterEstado && u.estado !== filterEstado) return false;
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
@@ -99,6 +98,17 @@ export default function App() {
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         return r.titulo.toLowerCase().includes(q) || r.id.toLowerCase().includes(q);
+      }
+      return true;
+    });
+  }, [filterAsignatura, searchQuery]);
+
+  const filteredActividades = useMemo(() => {
+    return actividades.filter(a => {
+      if (filterAsignatura && a.asignatura !== filterAsignatura) return false;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        return a.descripcion.toLowerCase().includes(q) || a.id.toLowerCase().includes(q) || a.tipo.toLowerCase().includes(q);
       }
       return true;
     });
@@ -185,8 +195,8 @@ export default function App() {
       <main className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-16'} transition-all duration-300`}>
         {/* Top Bar */}
         <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-40">
-          <div className="flex items-center gap-4">
-            <div className="flex-1 relative">
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex-1 min-w-[200px] relative">
               <input
                 type="text"
                 placeholder="Buscar por ID, palabra clave, asignatura, unidad..."
@@ -196,12 +206,19 @@ export default function App() {
               />
               <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <select value={filterAsignatura} onChange={(e) => setFilterAsignatura(e.target.value)} className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="">Todas las asignaturas</option>
                 <option value="MC">Música de Cámara</option>
                 <option value="ORQ">Orquesta</option>
                 <option value="BND">Banda</option>
+              </select>
+              <select value={filterCurso} onChange={(e) => setFilterCurso(e.target.value)} className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="">Todos los cursos</option>
+                <option value="4º EP">4º EP</option>
+                <option value="5º EP">5º EP</option>
+                <option value="6º EP">6º EP</option>
+                <option value="Todos">Todos</option>
               </select>
               <select value={filterEstado} onChange={(e) => setFilterEstado(e.target.value)} className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="">Todos los estados</option>
@@ -210,6 +227,14 @@ export default function App() {
                 <option value="HOLD">HOLD</option>
                 <option value="PROPUESTO">Propuesto</option>
               </select>
+              {(filterAsignatura || filterCurso || filterEstado || searchQuery) && (
+                <button
+                  onClick={() => { setFilterAsignatura(''); setFilterCurso(''); setFilterEstado(''); setSearchQuery(''); }}
+                  className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg transition-colors"
+                >
+                  ✕ Limpiar
+                </button>
+              )}
             </div>
           </div>
         </header>
@@ -309,18 +334,18 @@ export default function App() {
           </div>
         </div>
 
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
-          <h3 className="font-bold text-amber-900 mb-2">⚠️ Elementos HOLD — Pendientes de Verificación</h3>
-          <p className="text-sm text-amber-800 mb-4">Los siguientes elementos requieren verificación documental antes de su uso definitivo:</p>
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
+          <h3 className="font-bold text-orange-900 mb-2">⏳ Elementos HOLD — Pendientes de Verificación</h3>
+          <p className="text-sm text-orange-800 mb-4">Los siguientes elementos requieren verificación documental antes de su uso definitivo:</p>
           <ul className="space-y-2">
             {pendientesValidacion.slice(0, 5).map(p => (
               <li key={p.id} className="text-sm flex gap-2">
-                <span className="font-mono text-amber-700">{p.id}</span>
-                <span className="text-amber-900">{p.elemento}</span>
+                <span className="font-mono text-orange-700">{p.id}</span>
+                <span className="text-orange-900">{p.elemento}</span>
               </li>
             ))}
           </ul>
-          <button onClick={() => setActiveSection('calidad')} className="mt-4 text-sm text-amber-700 hover:text-amber-900 underline">
+          <button onClick={() => setActiveSection('calidad')} className="mt-4 text-sm text-orange-700 hover:text-orange-900 underline">
             Ver todos los pendientes →
           </button>
         </div>
@@ -431,9 +456,9 @@ export default function App() {
         </div>
 
         {asignatura !== 'MC' && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-            <p className="text-sm text-amber-800">
-              <strong>⚠️ HOLD:</strong> Los cursos específicos de {info.nombre} están pendientes de verificación documental. 
+          <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+            <p className="text-sm text-orange-800">
+              <strong>⏳ HOLD:</strong> Los cursos específicos de {info.nombre} están pendientes de verificación documental. 
               No se han atribuido cursos sin confirmación de la documentación curricular e institucional aplicable.
             </p>
           </div>
@@ -473,7 +498,7 @@ export default function App() {
             {objAsig.map(obj => (
               <div key={obj.id} className="flex gap-3 items-start p-3 bg-gray-50 rounded-lg">
                 <span className="font-mono text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded whitespace-nowrap">{obj.id}</span>
-                <p className="text-sm text-gray-700">{obj.descripcion}</p>
+                <p className="text-sm text-gray-700 flex-1">{obj.descripcion}</p>
                 <StatusBadge status={obj.estado} />
               </div>
             ))}
@@ -485,7 +510,7 @@ export default function App() {
           <div className="space-y-3">
             {contAsig.map(cont => (
               <div key={cont.id} className="p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className="font-mono text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">{cont.id}</span>
                   <span className="font-medium text-sm">{cont.nombre}</span>
                   <span className="text-xs bg-gray-200 px-2 py-0.5 rounded">{cont.tipo}</span>
@@ -501,7 +526,7 @@ export default function App() {
           <div className="space-y-3">
             {udAsig.map(ud => (
               <div key={ud.id} className="p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
                   <span className="font-mono text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">{ud.id}</span>
                   <span className="font-bold text-sm">{ud.titulo}</span>
                   <span className="text-xs bg-gray-200 px-2 py-0.5 rounded">{ud.trimestre}</span>
@@ -524,7 +549,7 @@ export default function App() {
             {critAsig.map(c => (
               <div key={c.id} className="flex gap-3 items-start p-3 bg-gray-50 rounded-lg">
                 <span className="font-mono text-xs bg-green-100 text-green-700 px-2 py-1 rounded whitespace-nowrap">{c.id}</span>
-                <p className="text-sm text-gray-700">{c.descripcion}</p>
+                <p className="text-sm text-gray-700 flex-1">{c.descripcion}</p>
                 <span className="text-xs bg-gray-200 px-2 py-0.5 rounded whitespace-nowrap">{c.tipo === 'NORMATIVO' ? 'Normativo' : 'Didáctico'}</span>
               </div>
             ))}
@@ -544,9 +569,9 @@ export default function App() {
         <div className="space-y-4">
           {filteredUnidades.map(ud => (
             <div key={ud.id} className="bg-white rounded-xl p-6 border border-gray-200 hover:border-indigo-300 transition-colors">
-              <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start justify-between mb-3 flex-wrap gap-2">
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className="font-mono text-sm bg-indigo-100 text-indigo-700 px-2 py-1 rounded font-bold">{ud.id}</span>
                     <AsignaturaBadge asignatura={ud.asignatura} />
                     <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{ud.curso}</span>
@@ -598,7 +623,7 @@ export default function App() {
                 </div>
                 <div className="mt-2 text-sm">
                   <span className="font-medium text-gray-700">Repertorio: </span>
-                  <span className="text-amber-700 italic">{ud.repertorio}</span>
+                  <span className="text-orange-700 italic">{ud.repertorio}</span>
                 </div>
                 <div className="mt-2 text-sm">
                   <span className="font-medium text-gray-700">Atención a la diversidad: </span>
@@ -624,7 +649,7 @@ export default function App() {
         <div className="space-y-3">
           {filteredObjetivos.map(obj => (
             <div key={obj.id} className="bg-white rounded-xl p-4 border border-gray-200">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <span className="font-mono text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded font-bold">{obj.id}</span>
                 <AsignaturaBadge asignatura={obj.asignatura} />
                 <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{obj.tipo}</span>
@@ -656,7 +681,7 @@ export default function App() {
         <div className="space-y-3">
           {filteredContenidos.map(cont => (
             <div key={cont.id} className="bg-white rounded-xl p-4 border border-gray-200">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <span className="font-mono text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded font-bold">{cont.id}</span>
                 <AsignaturaBadge asignatura={cont.asignatura} />
                 <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{cont.tipo}</span>
@@ -683,7 +708,7 @@ export default function App() {
         <div className="space-y-3">
           {criterios.filter(c => !filterAsignatura || c.asignatura === filterAsignatura).map(c => (
             <div key={c.id} className="bg-white rounded-xl p-4 border border-gray-200">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <span className="font-mono text-xs bg-green-100 text-green-700 px-2 py-1 rounded font-bold">{c.id}</span>
                 <AsignaturaBadge asignatura={c.asignatura} />
                 <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{c.tipo === 'NORMATIVO' ? 'Normativo' : 'Didáctico derivado'}</span>
@@ -736,7 +761,7 @@ export default function App() {
           <div className="space-y-3">
             {instrumentos.filter(i => !filterAsignatura || i.asignatura === filterAsignatura).map(i => (
               <div key={i.id} className="p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className="font-mono text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">{i.id}</span>
                   <span className="font-medium text-sm">{i.nombre}</span>
                   <AsignaturaBadge asignatura={i.asignatura} />
@@ -753,7 +778,7 @@ export default function App() {
           <div className="space-y-3">
             {evidencias.filter(e => !filterAsignatura || e.asignatura === filterAsignatura).map(e => (
               <div key={e.id} className="p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className="font-mono text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded">{e.id}</span>
                   <AsignaturaBadge asignatura={e.asignatura} />
                   <span className="text-xs bg-gray-200 px-2 py-0.5 rounded">{e.tipo}</span>
@@ -770,9 +795,9 @@ export default function App() {
           </div>
         </div>
 
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <h3 className="font-bold text-amber-900 mb-2">⚠️ Calificación — HOLD</h3>
-          <p className="text-sm text-amber-800">
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+          <h3 className="font-bold text-orange-900 mb-2">⏳ Calificación — HOLD</h3>
+          <p className="text-sm text-orange-800">
             Las ponderaciones de calificación (porcentajes de clase, repertorio, actitud, asistencia, conciertos) 
             NO se han establecido sin verificación documental. Estado: HOLD — PONDERACIÓN PENDIENTE DE VALIDACIÓN.
           </p>
@@ -790,7 +815,7 @@ export default function App() {
         <div className="space-y-6">
           {filteredRubricas.map(r => (
             <div key={r.id} className="bg-white rounded-xl p-6 border border-gray-200">
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
                 <span className="font-mono text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded font-bold">{r.id}</span>
                 <AsignaturaBadge asignatura={r.asignatura} />
                 <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{r.curso}</span>
@@ -819,9 +844,9 @@ export default function App() {
                   <h5 className="text-xs font-bold text-yellow-800 mb-1">NIVEL 2 — EN DESARROLLO</h5>
                   <p className="text-xs text-yellow-700">{r.niveles.nivel2}</p>
                 </div>
-                <div className="p-3 bg-red-50 rounded-lg border border-red-200">
-                  <h5 className="text-xs font-bold text-red-800 mb-1">NIVEL 1 — INICIAL</h5>
-                  <p className="text-xs text-red-700">{r.niveles.nivel1}</p>
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <h5 className="text-xs font-bold text-gray-800 mb-1">NIVEL 1 — INICIAL</h5>
+                  <p className="text-xs text-gray-700">{r.niveles.nivel1}</p>
                 </div>
               </div>
 
@@ -841,12 +866,12 @@ export default function App() {
       <div className="space-y-6">
         <h2 className="text-2xl font-bold text-gray-900">Repertorio</h2>
         
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
-          <h3 className="font-bold text-amber-900 mb-3">⚠️ TODO EL REPERTORIO 2026/2027 — HOLD</h3>
-          <p className="text-sm text-amber-800 mb-4">
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
+          <h3 className="font-bold text-orange-900 mb-3">⏳ TODO EL REPERTORIO 2026/2027 — HOLD</h3>
+          <p className="text-sm text-orange-800 mb-4">
             No se ha inventado repertorio para el curso 2026/2027. El repertorio definitivo depende de:
           </p>
-          <ul className="text-sm text-amber-800 space-y-1 list-disc list-inside">
+          <ul className="text-sm text-orange-800 space-y-1 list-disc list-inside">
             <li>Formación instrumental del alumnado matriculado</li>
             <li>Plantilla disponible en orquesta y banda</li>
             <li>Propuesta del departamento y aprobación</li>
@@ -994,9 +1019,9 @@ export default function App() {
         <div className="space-y-4">
           {normas.map(n => (
             <div key={n.id} className="bg-white rounded-xl p-6 border border-gray-200">
-              <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start justify-between mb-3 flex-wrap gap-2">
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className="font-mono text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">{n.id}</span>
                     <StatusBadge status={n.estado} />
                   </div>
@@ -1010,7 +1035,7 @@ export default function App() {
                 <div><span className="font-medium text-gray-700">Nivel educativo:</span> {n.nivel}</div>
                 <div className="md:col-span-2"><span className="font-medium text-gray-700">Artículos relevantes:</span> {n.articulos}</div>
                 <div className="md:col-span-2"><span className="font-medium text-gray-700">Anexos:</span> {n.anexos}</div>
-                <div className="md:col-span-2"><span className="font-medium text-gray-700">Fuente oficial:</span> <a href={n.fuente} className="text-indigo-600 hover:underline" target="_blank" rel="noopener noreferrer">{n.fuente}</a></div>
+                <div className="md:col-span-2"><span className="font-medium text-gray-700">Fuente oficial:</span> <a href={n.fuente} className="text-indigo-600 hover:underline break-all" target="_blank" rel="noopener noreferrer">{n.fuente}</a></div>
                 <div><span className="font-medium text-gray-700">Fecha de consulta:</span> {n.fechaConsulta}</div>
                 <div className="md:col-span-2"><span className="font-medium text-gray-700">Observaciones:</span> {n.observaciones}</div>
               </div>
@@ -1049,9 +1074,9 @@ export default function App() {
             <div className="text-3xl font-bold text-purple-700">{auditoriaCalidad.contenidosCompletos}</div>
             <div className="text-xs text-purple-600">Contenidos completos</div>
           </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
-            <div className="text-3xl font-bold text-amber-700">{auditoriaCalidad.elementosHold}</div>
-            <div className="text-xs text-amber-600">Elementos HOLD</div>
+          <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center">
+            <div className="text-3xl font-bold text-orange-700">{auditoriaCalidad.elementosHold}</div>
+            <div className="text-xs text-orange-600">Elementos HOLD</div>
           </div>
         </div>
 
@@ -1060,10 +1085,10 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {Object.entries(auditoriaCalidad.checks).map(([id, check]) => (
               <div key={id} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                <span className={`w-3 h-3 rounded-full ${check.estado === 'COMPLETO' ? 'bg-green-500' : 'bg-amber-500'}`}></span>
+                <span className={`w-3 h-3 rounded-full ${check.estado === 'COMPLETO' ? 'bg-green-500' : 'bg-orange-500'}`}></span>
                 <span className="font-mono text-xs text-gray-500">{id}</span>
-                <span className="text-sm text-gray-700">{check.descripcion}</span>
-                <span className={`text-xs px-2 py-0.5 rounded ml-auto ${check.estado === 'COMPLETO' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                <span className="text-sm text-gray-700 flex-1">{check.descripcion}</span>
+                <span className={`text-xs px-2 py-0.5 rounded ${check.estado === 'COMPLETO' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
                   {check.estado}
                 </span>
               </div>
@@ -1075,10 +1100,10 @@ export default function App() {
           <h3 className="font-bold text-lg mb-4">Pendientes de Validación</h3>
           <div className="space-y-3">
             {pendientesValidacion.map(p => (
-              <div key={p.id} className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-mono text-xs bg-amber-200 text-amber-800 px-2 py-0.5 rounded font-bold">{p.id}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded ${p.impacto === 'Alto' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
+              <div key={p.id} className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  <span className="font-mono text-xs bg-orange-200 text-orange-800 px-2 py-0.5 rounded font-bold">{p.id}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded ${p.impacto === 'Alto' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'}`}>
                     Impacto: {p.impacto}
                   </span>
                 </div>
@@ -1107,9 +1132,9 @@ export default function App() {
               { id: 'RC-10', desc: 'Ninguna referencia normativa sin fuente', ok: true },
             ].map(r => (
               <div key={r.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                <span className={`w-3 h-3 rounded-full ${r.ok ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                <span className={`w-3 h-3 rounded-full ${r.ok ? 'bg-green-500' : 'bg-orange-500'}`}></span>
                 <span className="font-mono text-xs text-gray-500">{r.id}</span>
-                <span className="text-xs text-gray-700">{r.desc}</span>
+                <span className="text-xs text-gray-700 flex-1">{r.desc}</span>
               </div>
             ))}
           </div>
