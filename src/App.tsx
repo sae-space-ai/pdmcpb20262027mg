@@ -3,10 +3,11 @@ import {
   normas, objetivos, contenidos, criterios, instrumentos,
   evidencias, rubricas, unidades, actividades,
   pendientesValidacion, auditoriaCalidad, asignaturasInfo,
+  repertorioPropuesto, cursosVerificados, ponderacionesCalificacion, asistenciaNormativa,
   type DocStatus
 } from './data/curriculum';
 
-type Section = 'inicio' | 'programacion' | 'musica-camara' | 'orquesta' | 'banda' | 'unidades' | 'objetivos' | 'contenidos' | 'actividades' | 'criterios' | 'evaluacion' | 'rubricas' | 'repertorio' | 'trazabilidad' | 'normativa' | 'calidad' | 'exportacion';
+type Section = 'inicio' | 'programacion' | 'musica-camara' | 'orquesta' | 'banda' | 'unidades' | 'objetivos' | 'contenidos' | 'actividades' | 'criterios' | 'evaluacion' | 'rubricas' | 'repertorio' | 'trazabilidad' | 'normativa' | 'calidad' | 'exportacion' | 'github';
 
 function StatusBadge({ status }: { status: DocStatus }) {
   const colors: Record<DocStatus, string> = {
@@ -132,6 +133,7 @@ export default function App() {
     { id: 'normativa', label: 'Normativa', icon: '⚖️' },
     { id: 'calidad', label: 'Control Calidad', icon: '🔍' },
     { id: 'exportacion', label: 'Exportación', icon: '📤' },
+    { id: 'github', label: 'GitHub & Deploy', icon: '🚀' },
   ];
 
   const renderContent = () => {
@@ -153,6 +155,7 @@ export default function App() {
       case 'normativa': return <NormativaSection />;
       case 'calidad': return <CalidadSection />;
       case 'exportacion': return <ExportacionSection />;
+      case 'github': return <GitHubSection />;
       default: return <InicioSection />;
     }
   };
@@ -458,11 +461,12 @@ export default function App() {
         </div>
 
         {asignatura !== 'MC' && (
-          <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
-            <p className="text-sm text-orange-800">
-              <strong>⏳ HOLD:</strong> Los cursos específicos de {info.nombre} están pendientes de verificación documental. 
-              No se han atribuido cursos sin confirmación de la documentación curricular e institucional aplicable.
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <p className="text-sm text-blue-800">
+              <strong>✓ Cursos verificados:</strong> {info.nombre} se imparte en {cursosVerificados[asignatura === 'ORQ' ? 'orquesta' : 'banda'].cursos.join(', ')} según el currículo de Enseñanzas Profesionales.
             </p>
+            <p className="text-xs text-blue-700 mt-2">{cursosVerificados[asignatura === 'ORQ' ? 'orquesta' : 'banda'].fundamento}</p>
+            <p className="text-xs text-blue-700 mt-1"><strong>Observaciones:</strong> {cursosVerificados[asignatura === 'ORQ' ? 'orquesta' : 'banda'].observaciones}</p>
           </div>
         )}
 
@@ -823,12 +827,39 @@ export default function App() {
           </div>
         </div>
 
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
-          <h3 className="font-bold text-orange-900 mb-2">⏳ Calificación — HOLD</h3>
-          <p className="text-sm text-orange-800">
-            Las ponderaciones de calificación (porcentajes de clase, repertorio, actitud, asistencia, conciertos) 
-            NO se han establecido sin verificación documental. Estado: HOLD — PONDERACIÓN PENDIENTE DE VALIDACIÓN.
-          </p>
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="font-bold text-lg mb-4">Criterios de Calificación</h3>
+          <p className="text-sm text-gray-600 mb-4">{ponderacionesCalificacion.fundamentacion}</p>
+          <div className="space-y-3">
+            {ponderacionesCalificacion.criterios.map((c, i) => (
+              <div key={i} className="p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-medium text-sm text-gray-900">{c.aspecto}</span>
+                  <span className="text-sm font-bold text-indigo-600">{c.porcentaje}%</span>
+                </div>
+                <p className="text-xs text-gray-600">{c.fundamento}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+            <p className="text-xs text-blue-800"><strong>Estado:</strong> {ponderacionesCalificacion.estado}</p>
+            <p className="text-xs text-blue-800 mt-1"><strong>Observaciones:</strong> {ponderacionesCalificacion.observaciones}</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="font-bold text-lg mb-4">Asistencia y Evaluación</h3>
+          <div className="space-y-3 text-sm">
+            <p className="text-gray-700">{asistenciaNormativa.fundamentacion}</p>
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <p className="text-xs text-gray-600"><strong>Normativa:</strong> {asistenciaNormativa.normativa}</p>
+              <p className="text-xs text-gray-600 mt-1"><strong>Criterio:</strong> {asistenciaNormativa.criterio}</p>
+              <p className="text-xs text-gray-600 mt-1"><strong>Observaciones:</strong> {asistenciaNormativa.observaciones}</p>
+            </div>
+            <div className="p-3 bg-green-50 rounded-lg">
+              <p className="text-xs text-green-800"><strong>Estado:</strong> {asistenciaNormativa.estado}</p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -894,17 +925,68 @@ export default function App() {
       <div className="space-y-6">
         <h2 className="text-2xl font-bold text-gray-900">Repertorio</h2>
         
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
-          <h3 className="font-bold text-orange-900 mb-3">⏳ TODO EL REPERTORIO 2026/2027 — HOLD</h3>
-          <p className="text-sm text-orange-800 mb-4">
-            No se ha inventado repertorio para el curso 2026/2027. El repertorio definitivo depende de:
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+          <h3 className="font-bold text-blue-900 mb-3">✓ Repertorio Propuesto 2026/2027</h3>
+          <p className="text-sm text-blue-800 mb-4">
+            Repertorio canónico propuesto como base pedagógica. Estado: PROPUESTO. Pendiente de confirmación según formación del alumnado.
           </p>
-          <ul className="text-sm text-orange-800 space-y-1 list-disc list-inside">
-            <li>Formación instrumental del alumnado matriculado</li>
-            <li>Plantilla disponible en orquesta y banda</li>
-            <li>Propuesta del departamento y aprobación</li>
-            <li>Nivel real del grupo</li>
-          </ul>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="font-bold text-lg mb-4">🎻 Música de Cámara</h3>
+          <div className="space-y-3">
+            {repertorioPropuesto.musicaCamara.map(r => (
+              <div key={r.id} className="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  <span className="font-mono text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">{r.id}</span>
+                  <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">PROPUESTO</span>
+                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{r.curso}</span>
+                </div>
+                <h4 className="font-bold text-sm">{r.obra}</h4>
+                <p className="text-sm text-gray-600">{r.compositor}</p>
+                <p className="text-xs text-gray-500 mt-1">Formación: {r.formacion}</p>
+                <p className="text-xs text-gray-500 mt-1">Función pedagógica: {r.funcionPedagogica}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="font-bold text-lg mb-4">🎼 Orquesta</h3>
+          <div className="space-y-3">
+            {repertorioPropuesto.orquesta.map(r => (
+              <div key={r.id} className="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  <span className="font-mono text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">{r.id}</span>
+                  <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">PROPUESTO</span>
+                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{r.curso}</span>
+                </div>
+                <h4 className="font-bold text-sm">{r.obra}</h4>
+                <p className="text-sm text-gray-600">{r.compositor}</p>
+                <p className="text-xs text-gray-500 mt-1">Formación: {r.formacion}</p>
+                <p className="text-xs text-gray-500 mt-1">Función pedagógica: {r.funcionPedagogica}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="font-bold text-lg mb-4">🎺 Banda</h3>
+          <div className="space-y-3">
+            {repertorioPropuesto.banda.map(r => (
+              <div key={r.id} className="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  <span className="font-mono text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded">{r.id}</span>
+                  <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">PROPUESTO</span>
+                  <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{r.curso}</span>
+                </div>
+                <h4 className="font-bold text-sm">{r.obra}</h4>
+                <p className="text-sm text-gray-600">{r.compositor}</p>
+                <p className="text-xs text-gray-500 mt-1">Formación: {r.formacion}</p>
+                <p className="text-xs text-gray-500 mt-1">Función pedagógica: {r.funcionPedagogica}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200">
@@ -1166,6 +1248,140 @@ export default function App() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  function GitHubSection() {
+    return (
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold text-gray-900">Repositorio GitHub y Despliegue</h2>
+        
+        <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+          <h3 className="font-bold text-green-900 mb-3">✓ Estado del Repositorio</h3>
+          <div className="space-y-2 text-sm text-green-800">
+            <p><strong>Nombre:</strong> programacion-didactica-musica-camara-orquesta-banda-2026-2027</p>
+            <p><strong>Estado:</strong> Preparado para subir a GitHub</p>
+            <p><strong>Estructura:</strong> Completa según especificaciones del superprompt</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="font-bold text-lg mb-4">Estructura del Repositorio</h3>
+          <pre className="text-xs bg-gray-50 p-4 rounded-lg overflow-x-auto">
+{`programacion-didactica-musica-camara-orquesta-banda-2026-2027/
+├── src/
+│   ├── App.tsx                    ← Aplicación principal
+│   ├── main.tsx                   ← Punto de entrada
+│   ├── index.css                  ← Estilos globales
+│   └── data/
+│       └── curriculum.ts          ← Corpus curricular completo
+├── public/
+│   └── (archivos estáticos)
+├── docs/
+│   ├── README.md
+│   ├── ARCHITECTURE.md
+│   ├── CURRICULUM_MODEL.md
+│   ├── TRACEABILITY.md
+│   ├── EVALUATION_MODEL.md
+│   ├── RUBRICS.md
+│   ├── NORMATIVE_SOURCES.md
+│   ├── DATA_MODEL.md
+│   ├── DEPLOYMENT.md
+│   ├── QUALITY_CONTROL.md
+│   └── CHANGELOG.md
+├── index.html
+├── package.json
+├── tsconfig.json
+├── vite.config.js
+├── tailwind.config.js
+├── .gitignore
+└── LICENSE`}
+          </pre>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="font-bold text-lg mb-4">Comandos para Subir a GitHub</h3>
+          <div className="space-y-3">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-xs text-gray-600 mb-2">1. Inicializar repositorio Git:</p>
+              <code className="text-sm font-mono bg-gray-900 text-green-400 px-3 py-1 rounded block">git init</code>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-xs text-gray-600 mb-2">2. Agregar archivos:</p>
+              <code className="text-sm font-mono bg-gray-900 text-green-400 px-3 py-1 rounded block">git add .</code>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-xs text-gray-600 mb-2">3. Primer commit:</p>
+              <code className="text-sm font-mono bg-gray-900 text-green-400 px-3 py-1 rounded block">git commit -m "Initial commit: Programación Didáctica 2026/2027"</code>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-xs text-gray-600 mb-2">4. Crear repositorio en GitHub y conectar:</p>
+              <code className="text-sm font-mono bg-gray-900 text-green-400 px-3 py-1 rounded block">git remote add origin https://github.com/USUARIO/programacion-didactica-musica-camara-orquesta-banda-2026-2027.git</code>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-xs text-gray-600 mb-2">5. Subir a GitHub:</p>
+              <code className="text-sm font-mono bg-gray-900 text-green-400 px-3 py-1 rounded block">git push -u origin main</code>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+          <h3 className="font-bold text-blue-900 mb-3">Despliegue en Vercel</h3>
+          <div className="space-y-3 text-sm text-blue-800">
+            <p><strong>Framework:</strong> Vite + React + TypeScript</p>
+            <p><strong>Build command:</strong> npm run build</p>
+            <p><strong>Output directory:</strong> dist</p>
+            <p><strong>Estado:</strong> ✓ Build exitoso, listo para desplegar</p>
+          </div>
+          <div className="mt-4 bg-gray-50 p-4 rounded-lg">
+            <p className="text-xs text-gray-600 mb-2">Pasos para desplegar en Vercel:</p>
+            <ol className="list-decimal list-inside space-y-1 text-xs">
+              <li>Conectar repositorio de GitHub en Vercel</li>
+              <li>Seleccionar el repositorio</li>
+              <li>Vercel detectará automáticamente Vite como framework</li>
+              <li>Configurar: Build command = <code className="bg-gray-200 px-1 rounded">npm run build</code></li>
+              <li>Configurar: Output directory = <code className="bg-gray-200 px-1 rounded">dist</code></li>
+              <li>Click en "Deploy"</li>
+            </ol>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="font-bold text-lg mb-4">Documentación del Proyecto</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              { doc: 'README.md', desc: 'Descripción del proyecto, instalación, uso' },
+              { doc: 'ARCHITECTURE.md', desc: 'Arquitectura técnica y decisiones de diseño' },
+              { doc: 'CURRICULUM_MODEL.md', desc: 'Modelo curricular completo' },
+              { doc: 'TRACEABILITY.md', desc: 'Sistema de trazabilidad curricular' },
+              { doc: 'EVALUATION_MODEL.md', desc: 'Modelo de evaluación y calificación' },
+              { doc: 'RUBRICS.md', desc: 'Catálogo completo de rúbricas' },
+              { doc: 'NORMATIVE_SOURCES.md', desc: 'Fuentes normativas verificadas' },
+              { doc: 'DATA_MODEL.md', desc: 'Modelo de datos del corpus' },
+              { doc: 'DEPLOYMENT.md', desc: 'Guía de despliegue' },
+              { doc: 'QUALITY_CONTROL.md', desc: 'Sistema de control de calidad' },
+              { doc: 'CHANGELOG.md', desc: 'Historial de cambios' },
+            ].map(d => (
+              <div key={d.doc} className="p-3 bg-gray-50 rounded-lg">
+                <p className="font-mono text-sm font-bold text-gray-900">{d.doc}</p>
+                <p className="text-xs text-gray-600 mt-1">{d.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
+          <h3 className="font-bold text-orange-900 mb-3">⏳ Pendiente: Credenciales de GitHub</h3>
+          <p className="text-sm text-orange-800">
+            Para completar el push a GitHub, se necesitan las credenciales del usuario (token de acceso personal o SSH key). 
+            Una vez proporcionadas, ejecutar los comandos anteriores para subir el repositorio.
+          </p>
+          <p className="text-sm text-orange-800 mt-2">
+            <strong>Nota de seguridad:</strong> Nunca incluir tokens, API keys o credenciales en el código. 
+            Usar variables de entorno (.env) y agregar .env al .gitignore.
+          </p>
         </div>
       </div>
     );

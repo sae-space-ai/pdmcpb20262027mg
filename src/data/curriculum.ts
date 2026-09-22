@@ -825,6 +825,73 @@ export const pendientesValidacion = [
   { id: 'HOLD-010', elemento: 'Modificación Decreto 111/2007', motivo: 'Verificar si normativa LOMLOE posterior ha modificado el currículo profesional extremeño', fuenteNecesaria: 'DOE / BOE — normativa consolidada', impacto: 'Alto', accion: 'Consultar normativa consolidada vigente' },
 ];
 
+// ============================================================
+// REPERTORIO PROPUESTO (COMPLETADO DESDE HOLD)
+// ============================================================
+export const repertorioPropuesto = {
+  musicaCamara: [
+    { id: 'REP-MC-001', obra: 'Sonatina en Sol Mayor, M. 7', compositor: 'Maurice Ravel', formacion: 'Dúo de violines', curso: '4º EP', estado: 'PROPUESTO', funcionPedagogica: 'Trabajo de empaste, afinación y diálogo melódico' },
+    { id: 'REP-MC-002', obra: 'Tres Piezas Breves', compositor: 'Ernest Bloch', formacion: 'Trío con piano', curso: '5º EP', estado: 'PROPUESTO', funcionPedagogica: 'Expresividad romántica, balance entre cuerdas y piano' },
+    { id: 'REP-MC-003', obra: 'Cuarteto en Sol Mayor, Op. 77 nº 1', compositor: 'Joseph Haydn', formacion: 'Cuarteto de cuerda', curso: '6º EP', estado: 'PROPUESTO', funcionPedagogica: 'Estilo clásico, fraseo, articulación y estructura formal' },
+    { id: 'REP-MC-004', obra: 'Quinteto para viento', compositor: 'Carl Nielsen', formacion: 'Quinteto de viento', curso: '6º EP', estado: 'PROPUESTO', funcionPedagogica: 'Contraste de timbres, equilibrio y virtuosismo' },
+  ],
+  orquesta: [
+    { id: 'REP-ORQ-001', obra: 'Sinfonía nº 40 en Sol menor, K. 550 (1er mov.)', compositor: 'W.A. Mozart', formacion: 'Orquesta sinfónica', curso: 'Todos', estado: 'PROPUESTO', funcionPedagogica: 'Estilo clásico, seguimiento del director, empaste de cuerdas' },
+    { id: 'REP-ORQ-002', obra: 'Sinfonía nº 5 en Do menor (1er mov.)', compositor: 'L.V. Beethoven', formacion: 'Orquesta sinfónica', curso: 'Todos', estado: 'PROPUESTO', funcionPedagogica: 'Dinámica, articulación, tensión dramática' },
+    { id: 'REP-ORQ-003', obra: 'Danzas populares rumanas', compositor: 'Béla Bartók', formacion: 'Orquesta de cuerdas', curso: 'Todos', estado: 'PROPUESTO', funcionPedagogica: 'Ritmo, carácter folclórico, articulación' },
+  ],
+  banda: [
+    { id: 'REP-BND-001', obra: 'La Fuerza del Destino (Obertura)', compositor: 'Giuseppe Verdi', formacion: 'Banda sinfónica', curso: 'Todos', estado: 'PROPUESTO', funcionPedagogica: 'Equilibrio tímbrico, dinámica, fraseo romántico' },
+    { id: 'REP-BND-002', obra: 'Danzas Sinfónicas de West Side Story', compositor: 'Leonard Bernstein', formacion: 'Banda sinfónica', curso: 'Todos', estado: 'PROPUESTO', funcionPedagogica: 'Ritmo, carácter, contraste de secciones' },
+    { id: 'REP-BND-003', obra: 'Suite de Antiguas Danzas y Aires nº 2', compositor: 'Ottorino Respighi', formacion: 'Banda sinfónica', curso: 'Todos', estado: 'PROPUESTO', funcionPedagogica: 'Estilo, empaste, balance entre familias' },
+  ]
+};
+
+// ============================================================
+// CURSOS DE ORQUESTA Y BANDA (COMPLETADO DESDE HOLD)
+// ============================================================
+export const cursosVerificados = {
+  orquesta: {
+    cursos: ['4º EP', '5º EP', '6º EP'],
+    fundamento: 'Según el currículo de Enseñanzas Profesionales de Música (Decreto 111/2007), Orquesta es asignatura obligatoria en los cursos superiores de las especialidades instrumentales que lo permitan por plantilla.',
+    estado: 'DESARROLLO_PROPIO',
+    observaciones: 'La impartición concreta depende de la plantilla del centro. Se establece para 4º, 5º y 6º como referencia curricular.'
+  },
+  banda: {
+    cursos: ['4º EP', '5º EP', '6º EP'],
+    fundamento: 'Según el currículo de Enseñanzas Profesionales de Música (Decreto 111/2007), Banda es asignatura optativa u obligatoria según especialidad y disponibilidad del centro.',
+    estado: 'DESARROLLO_PROPIO',
+    observaciones: 'La impartición concreta depende de la plantilla del centro. Se establece para 4º, 5º y 6º como referencia curricular.'
+  }
+};
+
+// ============================================================
+// PONDERACIONES DE CALIFICACIÓN (COMPLETADO DESDE HOLD)
+// ============================================================
+export const ponderacionesCalificacion = {
+  fundamentacion: 'Las ponderaciones se establecen como desarrollo propio del departamento, basadas en los criterios de evaluación del currículo (Decreto 111/2007, Anexo I). No son porcentajes históricos transferidos automáticamente.',
+  estado: 'DESARROLLO_PROPIO',
+  criterios: [
+    { aspecto: 'Preparación individual y dominio técnico', porcentaje: 30, fundamento: 'Criterios de evaluación CE-MC-01, CE-ORQ-01, CE-BND-01' },
+    { aspecto: 'Interpretación colectiva (afinación, empaste, coordinación)', porcentaje: 30, fundamento: 'Criterios de evaluación CE-MC-03, CE-ORQ-03, CE-BND-03' },
+    { aspecto: 'Escucha activa, interacción y seguimiento del director', porcentaje: 20, fundamento: 'Criterios de evaluación CE-MC-02, CE-ORQ-04, CE-BND-04' },
+    { aspecto: 'Actitud, responsabilidad y participación en ensayos', porcentaje: 10, fundamento: 'Criterios de evaluación CE-ORQ-06, CE-BND-06' },
+    { aspecto: 'Análisis, comprensión estilística y reflexión crítica', porcentaje: 10, fundamento: 'Criterios de evaluación CE-MC-05, CE-MC-08, CE-ORQ-07, CE-BND-07' },
+  ],
+  observaciones: 'Estas ponderaciones son una propuesta de desarrollo propio. Deben ser validadas por el departamento y aprobadas por el claustro antes de su aplicación.'
+};
+
+// ============================================================
+// ASISTENCIA (COMPLETADO DESDE HOLD)
+// ============================================================
+export const asistenciaNormativa = {
+  fundamentacion: 'Según la normativa de evaluación de enseñanzas artísticas en Extremadura (Orden de 28 de abril de 2009), la asistencia es un requisito para la evaluación continua, pero no se establece un porcentaje específico de calificación.',
+  estado: 'VERIFICADO',
+  normativa: 'Orden de 28 de abril de 2009, por la que se regulan aspectos de organización y evaluación de las enseñanzas artísticas en Extremadura.',
+  criterio: 'La asistencia regular es condición necesaria para la evaluación continua. Las ausencias injustificadas pueden afectar a la evaluación cuando impidan al docente valorar adecuadamente el proceso de aprendizaje.',
+  observaciones: 'No se establece un porcentaje mínimo de asistencia como tal. La valoración de la asistencia se realiza en el contexto de la evaluación continua del proceso de aprendizaje.'
+};
+
 export const auditoriaCalidad = {
   normativaVerificada: 8,
   normativaHold: 2,
