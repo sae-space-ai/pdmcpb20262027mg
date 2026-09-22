@@ -58,6 +58,7 @@ export default function App() {
   const [filterCurso, setFilterCurso] = useState<string>('');
   const [filterEstado, setFilterEstado] = useState<string>('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [apartadoSeleccionado, setApartadoSeleccionado] = useState<string>('1');
 
   const filteredUnidades = useMemo(() => {
     return unidades.filter(u => {
@@ -1269,8 +1270,6 @@ export default function App() {
   }
 
   function ProgramacionCompletaSection() {
-    const [apartadoSeleccionado, setApartadoSeleccionado] = useState<string>('1');
-    
     const apartadosCompletos = [
       { ...apartado1 },
       { ...apartado2 },
