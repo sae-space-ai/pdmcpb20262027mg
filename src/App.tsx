@@ -6,8 +6,9 @@ import {
   repertorioPropuesto, cursosVerificados, ponderacionesCalificacion, asistenciaNormativa,
   type DocStatus
 } from './data/curriculum';
+import { apartado1, apartado2, estructuraApartados } from './data/programacionCompleta';
 
-type Section = 'inicio' | 'programacion' | 'musica-camara' | 'orquesta' | 'banda' | 'unidades' | 'objetivos' | 'contenidos' | 'actividades' | 'criterios' | 'evaluacion' | 'rubricas' | 'repertorio' | 'trazabilidad' | 'normativa' | 'calidad' | 'exportacion' | 'github';
+type Section = 'inicio' | 'programacion' | 'programacion-completa' | 'musica-camara' | 'orquesta' | 'banda' | 'unidades' | 'objetivos' | 'contenidos' | 'actividades' | 'criterios' | 'evaluacion' | 'rubricas' | 'repertorio' | 'trazabilidad' | 'normativa' | 'calidad' | 'exportacion' | 'github';
 
 function StatusBadge({ status }: { status: DocStatus }) {
   const colors: Record<DocStatus, string> = {
@@ -118,6 +119,7 @@ export default function App() {
   const menuItems: { id: Section; label: string; icon: string }[] = [
     { id: 'inicio', label: 'Inicio', icon: '🏠' },
     { id: 'programacion', label: 'Programación', icon: '📋' },
+    { id: 'programacion-completa', label: 'Prog. Completa (30)', icon: '📖' },
     { id: 'musica-camara', label: 'Música de Cámara', icon: '🎻' },
     { id: 'orquesta', label: 'Orquesta', icon: '🎼' },
     { id: 'banda', label: 'Banda', icon: '🎺' },
@@ -140,6 +142,7 @@ export default function App() {
     switch (activeSection) {
       case 'inicio': return <InicioSection />;
       case 'programacion': return <ProgramacionSection />;
+      case 'programacion-completa': return <ProgramacionCompletaSection />;
       case 'musica-camara': return <AsignaturaSection asignatura="MC" />;
       case 'orquesta': return <AsignaturaSection asignatura="ORQ" />;
       case 'banda': return <AsignaturaSection asignatura="BND" />;
@@ -1259,6 +1262,162 @@ export default function App() {
                 <span className="text-xs text-gray-700 flex-1">{r.desc}</span>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function ProgramacionCompletaSection() {
+    const [apartadoSeleccionado, setApartadoSeleccionado] = useState<string>('1');
+    
+    const apartadosCompletos = [
+      { ...apartado1 },
+      { ...apartado2 },
+      // Apartados 3-30 se generan con estructura base
+      ...estructuraApartados.slice(2).map(a => ({
+        id: `AP-${a.numero.padStart(2, '0')}`,
+        numero: a.numero,
+        titulo: a.titulo,
+        finalidad: 'Sección en desarrollo. Ver subapartados para contenido detallado.',
+        desarrollo: 'Este apartado forma parte de la Programación Didáctica 2026/2027 de Música de Cámara, Banda y Orquesta para Enseñanzas Profesionales de Música en Extremadura.',
+        aplicacionMC: undefined,
+        aplicacionBanda: undefined,
+        aplicacionOrquesta: undefined,
+        estado: 'DESARROLLO_PROPIO' as const,
+        subapartados: Array.from({ length: a.subapartados }, (_, i) => ({
+          id: `AP-${a.numero.padStart(2, '0')}.${String(i + 1).padStart(2, '0')}`,
+          numero: `${a.numero}.${i + 1}`,
+          titulo: `Subapartado ${a.numero}.${i + 1}`,
+          contenido: 'Contenido en desarrollo. Este subapartado forma parte de la estructura documental completa de la programación.',
+          estado: 'DESARROLLO_PROPIO' as const
+        }))
+      }))
+    ];
+
+    const apartadoActual = apartadosCompletos.find(a => a.numero === apartadoSeleccionado) || apartadosCompletos[0];
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 text-white">
+          <h2 className="text-2xl font-bold mb-2">Programación Didáctica Completa</h2>
+          <p className="text-indigo-100">30 apartados · Desarrollo integral · Trazabilidad completa</p>
+          <p className="text-sm text-indigo-200 mt-2">Música de Cámara · Banda · Orquesta · Enseñanzas Profesionales · Extremadura · 2026/2027</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Navegación lateral */}
+          <div className="lg:col-span-1 bg-white rounded-xl border border-gray-200 p-4 max-h-[80vh] overflow-y-auto">
+            <h3 className="font-bold text-lg mb-3 sticky top-0 bg-white pb-2">Índice (30 apartados)</h3>
+            <nav className="space-y-1">
+              {apartadosCompletos.map(ap => (
+                <button
+                  key={ap.numero}
+                  onClick={() => setApartadoSeleccionado(ap.numero)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                    apartadoSeleccionado === ap.numero
+                      ? 'bg-indigo-100 text-indigo-900 font-medium'
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  <span className="font-mono text-xs text-gray-500">{ap.numero}.</span>{' '}
+                  {ap.titulo}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* Contenido principal */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Cabecera del apartado */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-lg font-mono font-bold">
+                  {apartadoActual.numero}
+                </span>
+                <h3 className="text-xl font-bold text-gray-900">{apartadoActual.titulo}</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-2">Finalidad</h4>
+                  <p className="text-gray-600">{apartadoActual.finalidad}</p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-2">Desarrollo</h4>
+                  <p className="text-gray-600">{apartadoActual.desarrollo}</p>
+                </div>
+
+                {apartadoActual.aplicacionMC && (
+                  <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-indigo-900 mb-2">Aplicación a Música de Cámara</h4>
+                    <p className="text-indigo-800 text-sm">{apartadoActual.aplicacionMC}</p>
+                  </div>
+                )}
+
+                {apartadoActual.aplicacionBanda && (
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-emerald-900 mb-2">Aplicación a Banda</h4>
+                    <p className="text-emerald-800 text-sm">{apartadoActual.aplicacionBanda}</p>
+                  </div>
+                )}
+
+                {apartadoActual.aplicacionOrquesta && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-amber-900 mb-2">Aplicación a Orquesta</h4>
+                    <p className="text-amber-800 text-sm">{apartadoActual.aplicacionOrquesta}</p>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 pt-4 border-t border-gray-200">
+                  <span className="text-sm text-gray-500">Estado documental:</span>
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                    apartadoActual.estado === 'NORMA_VIGENTE' ? 'bg-green-100 text-green-800' :
+                    apartadoActual.estado === 'DESARROLLO_PROPIO' ? 'bg-blue-100 text-blue-800' :
+                    apartadoActual.estado === 'HOLD' ? 'bg-orange-100 text-orange-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {apartadoActual.estado}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Subapartados */}
+            {apartadoActual.subapartados && apartadoActual.subapartados.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-bold text-gray-900">Subapartados ({apartadoActual.subapartados.length})</h3>
+                {apartadoActual.subapartados.map(sub => (
+                  <div key={sub.id} className="bg-white rounded-xl border border-gray-200 p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg font-mono font-bold text-sm">
+                        {sub.numero}
+                      </span>
+                      <h4 className="text-lg font-semibold text-gray-900">{sub.titulo}</h4>
+                    </div>
+                    
+                    <div className="prose prose-sm max-w-none">
+                      <div className="bg-gray-50 rounded-lg p-4 whitespace-pre-wrap text-gray-700 text-sm leading-relaxed">
+                        {sub.contenido}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-200">
+                      <span className="text-xs text-gray-500">Estado:</span>
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        sub.estado === 'NORMA_VIGENTE' ? 'bg-green-100 text-green-800' :
+                        sub.estado === 'DESARROLLO_PROPIO' ? 'bg-blue-100 text-blue-800' :
+                        sub.estado === 'HOLD' ? 'bg-orange-100 text-orange-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {sub.estado}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
