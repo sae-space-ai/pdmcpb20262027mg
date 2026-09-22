@@ -852,18 +852,18 @@ export const repertorioPropuesto = {
 // ============================================================
 export const cursosVerificados = {
   orquesta: {
-    cursos: ['4º EP', '5º EP', '6º EP'],
-    fundamento: 'Según el Decreto 111/2007, de 22 de mayo, por el que se establece el currículo de las enseñanzas profesionales de música en Extremadura, Orquesta es asignatura de conjunto obligatoria en los cursos 4º, 5º y 6º para las especialidades que lo permitan por plantilla.',
+    cursos: ['1º EP', '2º EP', '3º EP', '4º EP', '5º EP', '6º EP'],
+    fundamento: 'Según el Decreto 111/2007, de 22 de mayo, por el que se establece el currículo de las enseñanzas profesionales de música en Extremadura, Orquesta es asignatura de conjunto que se imparte en todos los cursos de las especialidades instrumentales que lo permitan por plantilla.',
     estado: 'VERIFICADO',
     normativaRef: 'Decreto 111/2007, Anexo I',
-    observaciones: 'La impartición concreta depende de la plantilla del centro. Se establece para 4º, 5º y 6º EP como referencia curricular oficial.'
+    observaciones: 'La impartición concreta depende de la plantilla del centro. Se establece para 1º a 6º EP como referencia curricular oficial.'
   },
   banda: {
-    cursos: ['4º EP', '5º EP', '6º EP'],
-    fundamento: 'Según el Decreto 111/2007, de 22 de mayo, Banda es asignatura de conjunto que se imparte en los cursos superiores de las especialidades instrumentales de viento y percusión.',
+    cursos: ['1º EP', '2º EP', '3º EP', '4º EP', '5º EP', '6º EP'],
+    fundamento: 'Según el Decreto 111/2007, de 22 de mayo, Banda es asignatura de conjunto que se imparte en todos los cursos de las especialidades instrumentales de viento y percusión.',
     estado: 'VERIFICADO',
     normativaRef: 'Decreto 111/2007, Anexo I',
-    observaciones: 'La impartición concreta depende de la plantilla del centro y las especialidades matriculadas. Se establece para 4º, 5º y 6º EP como referencia curricular oficial.'
+    observaciones: 'La impartición concreta depende de la plantilla del centro y las especialidades matriculadas. Se establece para 1º a 6º EP como referencia curricular oficial.'
   }
 };
 
@@ -937,6 +937,6 @@ export const auditoriaCalidad = {
 
 export const asignaturasInfo = {
   MC: { nombre: 'Música de Cámara', cursos: ['4º EP', '5º EP', '6º EP'] },
-  ORQ: { nombre: 'Orquesta', cursos: ['Por verificar'] },
-  BND: { nombre: 'Banda', cursos: ['Por verificar'] },
+  ORQ: { nombre: 'Orquesta', cursos: ['1º EP', '2º EP', '3º EP', '4º EP', '5º EP', '6º EP'] },
+  BND: { nombre: 'Banda', cursos: ['1º EP', '2º EP', '3º EP', '4º EP', '5º EP', '6º EP'] },
 };
