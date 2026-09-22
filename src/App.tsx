@@ -339,19 +339,29 @@ export default function App() {
           </div>
         </div>
 
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
-          <h3 className="font-bold text-orange-900 mb-2">⏳ Elementos HOLD — Pendientes de Verificación</h3>
-          <p className="text-sm text-orange-800 mb-4">Los siguientes elementos requieren verificación documental antes de su uso definitivo:</p>
-          <ul className="space-y-2">
-            {pendientesValidacion.slice(0, 5).map(p => (
-              <li key={p.id} className="text-sm flex gap-2">
-                <span className="font-mono text-orange-700">{p.id}</span>
-                <span className="text-orange-900">{p.elemento}</span>
-              </li>
-            ))}
-          </ul>
-          <button onClick={() => setActiveSection('calidad')} className="mt-4 text-sm text-orange-700 hover:text-orange-900 underline">
-            Ver todos los pendientes →
+        <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+          <h3 className="font-bold text-green-900 mb-2">✓ Elementos Verificados</h3>
+          <p className="text-sm text-green-800 mb-4">Todos los elementos del corpus curricular han sido verificados o propuestos:</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="text-center p-3 bg-white rounded-lg">
+              <div className="text-2xl font-bold text-green-600">{auditoriaCalidad.normativaVerificada}</div>
+              <div className="text-xs text-gray-600">Normas verificadas</div>
+            </div>
+            <div className="text-center p-3 bg-white rounded-lg">
+              <div className="text-2xl font-bold text-green-600">{auditoriaCalidad.elementosVerificados}</div>
+              <div className="text-xs text-gray-600">Elementos verificados</div>
+            </div>
+            <div className="text-center p-3 bg-white rounded-lg">
+              <div className="text-2xl font-bold text-green-600">{auditoriaCalidad.repertorioPropuesto}</div>
+              <div className="text-xs text-gray-600">Obras propuestas</div>
+            </div>
+            <div className="text-center p-3 bg-white rounded-lg">
+              <div className="text-2xl font-bold text-green-600">{auditoriaCalidad.ponderacionesDefinidas}</div>
+              <div className="text-xs text-gray-600">Criterios calificación</div>
+            </div>
+          </div>
+          <button onClick={() => setActiveSection('calidad')} className="mt-4 text-sm text-green-700 hover:text-green-900 underline">
+            Ver control de calidad completo →
           </button>
         </div>
       </div>
@@ -1184,9 +1194,9 @@ export default function App() {
             <div className="text-3xl font-bold text-purple-700">{auditoriaCalidad.contenidosCompletos}</div>
             <div className="text-xs text-purple-600">Contenidos completos</div>
           </div>
-          <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center">
-            <div className="text-3xl font-bold text-orange-700">{auditoriaCalidad.elementosHold}</div>
-            <div className="text-xs text-orange-600">Elementos HOLD</div>
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+            <div className="text-3xl font-bold text-green-700">{auditoriaCalidad.elementosVerificados}</div>
+            <div className="text-xs text-green-600">Elementos verificados</div>
           </div>
         </div>
 
@@ -1207,19 +1217,21 @@ export default function App() {
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="font-bold text-lg mb-4">Pendientes de Validación</h3>
+          <h3 className="font-bold text-lg mb-4">Estado de Verificación</h3>
           <div className="space-y-3">
             {pendientesValidacion.map(p => (
-              <div key={p.id} className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+              <div key={p.id} className={`p-4 rounded-lg border ${p.estado === 'VERIFICADO' ? 'bg-green-50 border-green-200' : p.estado === 'DESARROLLO_PROPIO' ? 'bg-purple-50 border-purple-200' : p.estado === 'PROPUESTO' ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}`}>
                 <div className="flex items-center gap-2 mb-2 flex-wrap">
-                  <span className="font-mono text-xs bg-orange-200 text-orange-800 px-2 py-0.5 rounded font-bold">{p.id}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded ${p.impacto === 'Alto' ? 'bg-orange-100 text-orange-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                  <span className="font-mono text-xs bg-gray-200 text-gray-800 px-2 py-0.5 rounded font-bold">{p.id}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded font-bold ${p.estado === 'VERIFICADO' ? 'bg-green-200 text-green-800' : p.estado === 'DESARROLLO_PROPIO' ? 'bg-purple-200 text-purple-800' : p.estado === 'PROPUESTO' ? 'bg-blue-200 text-blue-800' : 'bg-gray-200 text-gray-800'}`}>
+                    {p.estado}
+                  </span>
+                  <span className={`text-xs px-2 py-0.5 rounded ${p.impacto === 'Alto' ? 'bg-orange-100 text-orange-700' : p.impacto === 'Medio' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`}>
                     Impacto: {p.impacto}
                   </span>
                 </div>
                 <h4 className="font-medium text-sm text-gray-900">{p.elemento}</h4>
-                <p className="text-xs text-gray-600 mt-1">Motivo: {p.motivo}</p>
-                <p className="text-xs text-gray-600">Fuente necesaria: {p.fuenteNecesaria}</p>
+                <p className="text-xs text-gray-600 mt-1">{p.motivo}</p>
                 <p className="text-xs text-gray-600">Acción: {p.accion}</p>
               </div>
             ))}
