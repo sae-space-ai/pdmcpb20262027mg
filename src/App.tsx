@@ -7,6 +7,7 @@ import {
   type DocStatus
 } from './data/curriculum';
 import { apartado1, apartado2, estructuraApartados } from './data/programacionCompleta';
+import { apartadosDesarrollados, estructuraRestante } from './data/apartadosDesarrollados';
 
 type Section = 'inicio' | 'programacion' | 'programacion-completa' | 'musica-camara' | 'orquesta' | 'banda' | 'unidades' | 'objetivos' | 'contenidos' | 'actividades' | 'criterios' | 'evaluacion' | 'rubricas' | 'repertorio' | 'trazabilidad' | 'normativa' | 'calidad' | 'exportacion' | 'github';
 
@@ -1270,16 +1271,36 @@ export default function App() {
   }
 
   function ProgramacionCompletaSection() {
+    // Combinar apartados desarrollados con estructura base
     const apartadosCompletos = [
       { ...apartado1 },
       { ...apartado2 },
-      // Apartados 3-30 se generan con estructura base
-      ...estructuraApartados.slice(2).map(a => ({
+      // Apartados 3-7 con contenido desarrollado
+      ...Object.entries(apartadosDesarrollados).map(([num, data]) => ({
+        id: `AP-${num.padStart(2, '0')}`,
+        numero: num,
+        titulo: data.titulo,
+        finalidad: `Desarrollo completo del apartado ${num}: ${data.titulo}`,
+        desarrollo: `Este apartado contiene ${data.subapartados.length} subapartados completamente desarrollados con contenido sustantivo.`,
+        aplicacionMC: undefined,
+        aplicacionBanda: undefined,
+        aplicacionOrquesta: undefined,
+        estado: 'DESARROLLO_PROPIO' as const,
+        subapartados: data.subapartados.map(sub => ({
+          id: `AP-${num.padStart(2, '0')}.${sub.numero.split('.')[1]}`,
+          numero: sub.numero,
+          titulo: sub.titulo,
+          contenido: sub.contenido,
+          estado: 'DESARROLLO_PROPIO' as const
+        }))
+      })),
+      // Apartados 8-30 con estructura base
+      ...estructuraApartados.slice(7).map(a => ({
         id: `AP-${a.numero.padStart(2, '0')}`,
         numero: a.numero,
         titulo: a.titulo,
-        finalidad: 'Sección en desarrollo. Ver subapartados para contenido detallado.',
-        desarrollo: 'Este apartado forma parte de la Programación Didáctica 2026/2027 de Música de Cámara, Banda y Orquesta para Enseñanzas Profesionales de Música en Extremadura.',
+        finalidad: estructuraRestante[a.numero as keyof typeof estructuraRestante] || 'Sección en desarrollo.',
+        desarrollo: estructuraRestante[a.numero as keyof typeof estructuraRestante] || 'Este apartado forma parte de la Programación Didáctica 2026/2027.',
         aplicacionMC: undefined,
         aplicacionBanda: undefined,
         aplicacionOrquesta: undefined,
@@ -1287,8 +1308,8 @@ export default function App() {
         subapartados: Array.from({ length: a.subapartados }, (_, i) => ({
           id: `AP-${a.numero.padStart(2, '0')}.${String(i + 1).padStart(2, '0')}`,
           numero: `${a.numero}.${i + 1}`,
-          titulo: `Subapartado ${a.numero}.${i + 1}`,
-          contenido: 'Contenido en desarrollo. Este subapartado forma parte de la estructura documental completa de la programación.',
+          titulo: `${a.titulo} ${a.numero}.${i + 1}`,
+          contenido: `${estructuraRestante[a.numero as keyof typeof estructuraRestante] || 'Contenido en desarrollo.'}`,
           estado: 'DESARROLLO_PROPIO' as const
         }))
       }))
